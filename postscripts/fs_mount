@@ -1,0 +1,56 @@
+#!/bin/bash -ex
+
+#-- Create entry in fstab to mount our 2 local nvme disks
+cat <<END >>/etc/fstab
+nfs.example.com:/srv/nfs/ldap-users /home/ldap-users nfs defaults 0 0
+nfs.example.com:/srv/nfs/compute-nodes/enroot-cache /opt/cache/enroot nfs defaults 0 0
+nfs.example.com:/srv/nfs/compute-nodes/jobs-logs /opt/jobs-logs nfs defaults 0 0
+nfs.example.com:/srv/nfs/compute-nodes/experiments /opt/experiments nfs defaults 0 0
+nfs.example.com:/srv/nfs/compute-nodes/datasets-cache /opt/cache/datasets nfs defaults 0 0
+nfs.example.com:/srv/nfs/compute-nodes/images /opt/images nfs defaults 0 0
+nfs.example.com:/srv/nfs/persistent /data/nfs nfs defaults 0 0
+UUID=ec32b960-14df-472a-9ecc-5dac105411c2 /mnt/disk xfs defaults 0 0
+END
+
+#-- Set dirs and perms for enroot and pyxis
+mkdir -p /mnt/disk
+mkdir -p /home/ldap-users
+mkdir -p /opt/cache/enroot
+mkdir -p /opt/jobs-logs
+mkdir -p /opt/experiments
+mkdir -p /opt/cache/datasets
+mkdir -p /opt/images
+mkdir -p -m777 /data/nfs/cache/pyxis
+mkdir -p -m777 /data/nfs/cache/shared
+mkdir -p -m777 /data/nfs/cache/persistent
+ln -s /data/nfs/cache/pyxis /opt/cache/pyxis
+ln -s /data/nfs/cache/shared /opt/cache/shared
+ln -s /data/nfs/cache/persistent /opt/cache/persistent
+ln -s /mnt/disk/persistent /mnt/persistent
+ln -s /mnt/disk/scratch /mnt/scratch
+
+mkdir -p -m777 "/run/enroot"
+mkdir -p -m755 "/var/run/munge"
+chown -R munge: "/var/run/munge/"
+chown munge: "/var/lib/munge/"
+chmod 0700 "/var/lib/munge/"
+chown -R munge: "/etc/munge/"
+mkdir -p /var/log/munge
+chown -R munge:munge /var/log/munge
+chmod 700 /var/log/munge
+
+#Mount all the fstab
+mount -a || echo "mount -a has some errors but we ignored it"
+
+# Small tmp
+mkdir -p /mnt/disk/persistent
+mkdir -p /mnt/disk/scratch
+rm -rf /mnt/scratch/tmp
+mkdir -p /mnt/scratch/tmp
+chmod 777 /mnt/scratch/tmp
+mkdir -p -m777 /mnt/scratch/tmp/apptainer/
+mkdir -p -m777 /mnt/scratch/tmp/enroot/
+chmod 755 /data/nfs
+mkdir -p -m755 /data/nfs/cache
+
+echo "APPTAINER_TMPDIR=/mnt/scratch/tmp/apptainer/" >>/etc/environment

@@ -1,0 +1,10 @@
+#!/bin/bash
+cd /
+setcap cap_setgid+ep ./usr/bin/newgidmap 
+setcap cap_setuid+ep ./usr/bin/newuidmap 
+setcap cap_net_admin,cap_net_raw+p ./usr/bin/ping 
+setcap cap_sys_admin,cap_mknod+ep ./usr/bin/enroot-aufs2ovlfs 
+setcap cap_sys_admin+ep ./usr/bin/enroot-mksquashovlfs 
+setcap cap_ipc_lock+ep ./usr/bin/gnome-keyring-daemon 
+setcap cap_net_raw+p ./usr/sbin/arping 
+setcap cap_net_raw+p ./usr/sbin/clockdiff 

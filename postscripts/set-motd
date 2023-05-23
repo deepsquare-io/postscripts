@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cat << END > /etc/motd
+                                slurm:	    $(slurmd --version)
+╔═╗┌─┐ ┬ ┬┌─┐┬─┐┌─┐╔═╗╔═╗	pmix:       $(find /usr/lib64 -maxdepth 1 -name "pmix*" -printf "%f ")
+╚═╗│─┼┐│ │├─┤├┬┘├┤ ║ ║╚═╗	pyxis:      0.14.0
+╚═╝└─┘└└─┘┴ ┴┴└─└─┘╚═╝╚═╝	enroot:     $(enroot version)
+                                apptainer:  $(apptainer --version | cut -d " " -f 3)
+
+HOME: NFS share, not meant for high IO
+SCRATCH: High performance parallel file system available at /data/beegfs/
+END

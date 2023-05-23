@@ -1,0 +1,77 @@
+#!/bin/sh -ex
+
+cvmfs_config setup
+
+mkdir -p /mnt/persistent/cvmfs_cache
+
+cat <<"EOF" >/etc/cvmfs/default.local
+CVMFS_QUOTA_LIMIT=-1
+CVMFS_CACHE_BASE=/mnt/persistent/cvmfs_cache
+CVMFS_USE_GEOAPI=no
+CVMFS_CLIENT_PROFILE=single
+CVMFS_HTTP_PROXY="DIRECT"
+CVMFS_KEYS_DIR="/etc/cvmfs/keys"
+CVMFS_SERVER_URL="https://cvmfs.ch-basel-1.deepsquare.run/cvmfs/@fqrn@"
+CVMFS_USER=root
+CVMFS_REPOSITORIES="software.library.deepsquare.run,models.library.deepsquare.run"
+CVMFS_USE_SSL_SYSTEM_CA=true
+X509_CERT_BUNDLE=/etc/ssl/certs/ca-bundle.trust.crt
+EOF
+
+cat << "EOF" > /etc/cvmfs/keys/software.library.deepsquare.run.pub
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApZb5bVK7tjeuyPMVxVZJ
+80NtvuqxzKvZ6JTZdORmXKYMt8ZIzDFOqNjmlh/xDzmL1k3siTGQ/9GeDxydxa/e
+1e2+1+dZeTd+oP0hD0ooIDGWOzbBg7SCUUhFjfYrQCA04gFwce3+ICulKB2CC517
+3aKbRNmhH6zdEpjmJshsFKEp1BdSL9mMXKoPYlGo8/ymw2cBB4hJKqoy4NS1c6GX
+idnxy+Y+EUk73Gic2jg6sak86aIdqIdRr8BFSz7a+Sc8ojGGZFThyUqEyW7SKrkD
+G5wFRi3ODl/hCWYYEQVKPFkhAn/L77eP3V23/2uvc9UcsVHV07eR1/q+GxCSeEnd
+WwIDAQAB
+-----END PUBLIC KEY-----
+EOF
+cat << "EOF" > /etc/cvmfs/keys/models.library.deepsquare.run.pub
+-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwWI9Dm1uNzOGEJ3PEXoR
+rpuGdSlL3U7fstpQBTXSv09NtxTrm65mTa6Er1IGkMFZOL3F5vL9ozilvQTcyd7U
+MG794Ij7ME9WpnTMrl77Iprxy1q2+Ey1yKpzXC/9P0Zm5h4Xgt/Trl9qacjpDusK
+NLFg7DKWDZ/HiurYG3zSWKMRVlIA2T9UC7kSpsKriYkTK9FTABExB71W4AvCDzOw
+XZgqEamSD9fJ0GftlZPMP03O1eAfoIg676O7FWUPxdBa+y74rtwcJH38E2nLm85v
+OPSiNG8+vJT8jD9T7xHreiPgvllzwxV7picbkv8AilFcgCqUmF9sqplksCP3oLhT
+jwIDAQAB
+-----END PUBLIC KEY-----
+EOF
+
+mkdir -p /opt/software
+mkdir -p /opt/models
+
+cat << "EOF" > /etc/systemd/system/opt-software.mount
+[Unit]
+Description=software.library.deepsquare.run CVMFS mount
+
+[Mount]
+What=software.library.deepsquare.run
+Where=/opt/software
+Type=cvmfs
+Options=fsname=cvmfs2,system_mount,allow_other,grab_mountpoint
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+cat << "EOF" > /etc/systemd/system/opt-models.mount
+[Unit]
+Description=models.library.deepsquare.run CVMFS mount
+
+[Mount]
+What=models.library.deepsquare.run
+Where=/opt/models
+Type=cvmfs
+Options=fsname=cvmfs2,system_mount,allow_other,grab_mountpoint
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl stop autofs
+systemctl start opt-software.mount 
+systemctl start opt-models.mount 

@@ -1,0 +1,5 @@
+#!/bin/bash
+update-ca-trust
+chmod 0600 /etc/sssd/sssd.conf
+systemctl restart --no-block sssd
+systemctl restart --no-block sshd

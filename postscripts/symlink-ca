@@ -1,0 +1,3 @@
+#!/bin/sh
+
+ln -s /etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem /etc/ssl/certs/ca-certificates.crt

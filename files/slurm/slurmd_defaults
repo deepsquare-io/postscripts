@@ -1,0 +1,4 @@
+CONTROLLER_HOST=slurm-cluster-example-1-controller-0.example.com
+PMIX_MCA_ptl=^usock
+PMIX_SYSTEM_TMPDIR=/var/empty
+PMIX_MCA_gds=hash

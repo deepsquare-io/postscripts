@@ -1,0 +1,75 @@
+#!/bin/bash -ex
+
+## postbootscript to update slurm's config and userid at image boot.
+echo "Runing postbootscript: slurm"
+
+#-- Install slurm-completions
+curl -fsSL -o /etc/bash_completion.d/slurm_completion.sh https://raw.githubusercontent.com/SchedMD/slurm/master/contribs/slurm_completion_help/slurm_completion.sh
+chmod +x /etc/bash_completion.d/slurm_completion.sh
+
+chmod 600 /etc/munge/munge.key
+
+mkdir -p /etc/slurm/prolog.d
+mkdir -p /etc/slurm/epilog.d
+mkdir -p /etc/slurm/taskprolog.d
+
+mkdir -p /var/log/slurm/
+
+cat <<\END >/etc/enroot/enroot.conf.d/00-default.conf
+ENROOT_ROOTFS_WRITABLE yes
+ENROOT_GZIP_PROGRAM pigz
+ENROOT_RUNTIME_PATH /run/enroot/user-$(id -u)
+ENROOT_CACHE_PATH /mnt/scratch/tmp/enroot/cache/group-$(id -g)
+ENROOT_DATA_PATH /mnt/scratch/tmp/enroot/containers/user-$(id -u)
+ENROOT_TEMP_PATH /mnt/scratch/tmp
+ENROOT_RESTRICT_DEV n
+ENROOT_MOUNT_HOME n
+ENROOT_SQUASH_OPTIONS -comp lz4 -noI -noD -noF -noX -no-duplicates
+ENROOT_MAX_PROCESSORS $(nproc)
+END
+
+##--Slurm setup
+#-- Slurmd service creation
+cat <<\END >/etc/systemd/system/slurmd.service
+[Unit]
+Description=Slurm node daemon
+After=network.target munge.service remote-fs.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+EnvironmentFile=-/etc/default/slurmd
+Restart=always
+RestartSec=3
+ExecStart=/usr/sbin/slurmd -D -d /usr/sbin/slurmstepd --conf-server $CONTROLLER_HOST
+ExecReload=/bin/kill -HUP $MAINPID
+PIDFile=/var/run/slurmd.pid
+KillMode=process
+LimitNOFILE=131072
+LimitMEMLOCK=infinity
+LimitSTACK=infinity
+Delegate=yes
+
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target
+END
+
+#-- fix enroot bug with rhel based distros
+hostname >/etc/hostname
+
+#-- Wait for LDAP
+while ! id slurm; do
+  sleep 1
+done
+
+#systemctl daemon-reload
+systemctl restart munge
+systemctl start --no-block slurmd
+
+#-- Temporary
+systemctl is-active --quiet docker && systemctl stop --no-block docker
+
+exit 0

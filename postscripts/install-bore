@@ -1,0 +1,11 @@
+#!/usr/bin/bash
+
+arch="$(uname -m)"
+
+if [[ $arch == x86_64* ]]; then
+    curl -fsSL https://github.com/deepsquare-io/bore/releases/download/v0.4.2/bore_linux_amd64 -o /usr/bin/bore
+    chmod +x /usr/bin/bore
+elif [[ $arch == arm* ]] || [[ $arch = aarch64 ]]; then
+    curl -fsSL https://github.com/deepsquare-io/bore/releases/download/v0.4.2/bore_linux_arm -o /usr/bin/bore
+    chmod +x /usr/bin/bore
+fi

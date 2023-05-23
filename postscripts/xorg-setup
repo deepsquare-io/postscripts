@@ -1,0 +1,31 @@
+#!/bin/sh
+
+set -ex
+
+nvidia-xconfig --enable-all-gpus -a --virtual=640x480 --allow-empty-initial-configuration --no-connected-monitor
+
+cat <<'EOF' >/etc/systemd/system/xorg@.socket
+[Unit]
+Description=Socket for xorg at display %i
+
+[Socket]
+ListenStream=/tmp/.X11-unix/X%i
+EOF
+
+cat <<'EOF' >/etc/systemd/system/xorg@.service
+[Unit]
+Description=Xorg server at display %i
+
+Requires=xorg@%i.socket
+After=xorg@%i.socket
+
+[Service]
+Type=simple
+SuccessExitStatus=0 1
+
+ExecStart=/usr/bin/Xorg :%i -nolisten tcp -noreset -verbose 2 "vt${XDG_VTNR}"
+EOF
+
+systemctl start xorg@97.socket
+systemctl start xorg@98.socket
+systemctl start xorg@99.socket

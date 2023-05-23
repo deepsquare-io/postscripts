@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+echo "export APPTAINER_TMPDIR=/mnt/scratch/tmp/apptainer/"
