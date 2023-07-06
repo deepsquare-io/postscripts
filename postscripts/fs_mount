@@ -49,7 +49,7 @@ mkdir -p -m777 /mnt/disk/scratch/tmp/enroot/
 # Caches
 mkdir -p /mnt/nfs/cache
 chmod 755 /mnt/nfs/cache
-mkdir -p /mnt/nfs/cache/shared
+mkdir -p /mnt/nfs/cache/shared # STORAGE_PATH
 chmod 777 /mnt/nfs/cache/shared
 mkdir -p /mnt/nfs/cache/persistent # DEEPSQUARE_TMP or DEEPSQUARE_SHARED_TMP (cache is not cleared, this must be cleared via cron)
 chmod 777 /mnt/nfs/cache/persistent
