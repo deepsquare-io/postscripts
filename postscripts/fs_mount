@@ -10,12 +10,17 @@ END
 
 #-- Set dirs and perms for enroot and pyxis
 mkdir -p /mnt/disk
-mkdir -p /home/ldap-users
-mkdir -p /opt/cache/enroot
-mkdir -p -m777 /mnt/nfs/cache/shared
-mkdir -p -m777 /mnt/nfs/cache/persistent
-ln -s /mnt/nfs/cache/shared /opt/cache/shared
-ln -s /mnt/nfs/cache/persistent /opt/cache/persistent
+chmod 755 /mnt/disk
+mkdir -p /mnt/nfs
+chmod 755 /mnt/nfs
+mkdir -p -m755 /home/ldap-users
+mkdir -p -m755 /opt/cache
+mkdir -p -m755 /opt/cache/enroot
+ln -s /mnt/nfs/cache/shared /opt/cache/shared                   # STORAGE_PATH
+ln -s /mnt/nfs/cache/persistent /opt/cache/persistent           # DEEPSQUARE_TMP or DEEPSQUARE_SHARED_TMP
+ln -s /mnt/nfs/cache/world-tmp /opt/cache/world-tmp             # DEEPSQUARE_SHARED_WORLD_TMP
+ln -s /mnt/disk/persistent/per-user/tmp /opt/cache/disk/tmp     # DEEPSQUARE_DISK_TMP
+ln -s /mnt/disk/persistent/shared/tmp /opt/cache/disk/world-tmp # DEEPSQUARE_DISK_WORLD_TMP
 ln -s /mnt/disk/persistent /mnt/persistent
 ln -s /mnt/disk/scratch /mnt/scratch
 
@@ -32,15 +37,35 @@ chmod 700 /var/log/munge
 #Mount all the fstab
 mount -a || echo "mount -a has some errors but we ignored it"
 
-# Small tmp
-mkdir -p /mnt/disk/persistent
+# Scratch (for container runtimes)
 mkdir -p /mnt/disk/scratch
-rm -rf /mnt/scratch/tmp
-mkdir -p /mnt/scratch/tmp
-chmod 777 /mnt/scratch/tmp
-mkdir -p -m777 /mnt/scratch/tmp/apptainer/
-mkdir -p -m777 /mnt/scratch/tmp/enroot/
-chmod 755 /mnt/nfs
-mkdir -p -m755 /mnt/nfs/cache
+chmod 755 /mnt/disk/scratch
+rm -rf /mnt/disk/scratch/tmp
+mkdir -p -m777 /mnt/disk/scratch/tmp
+mkdir -p -m777 /mnt/disk/scratch/tmp/apptainer/
+mkdir -p -m777 /mnt/disk/scratch/tmp/enroot/
+
+# Caches
+mkdir -p /mnt/nfs/cache
+chmod 755 /mnt/nfs/cache
+mkdir -p /mnt/nfs/cache/shared
+chmod 777 /mnt/nfs/cache/shared
+mkdir -p /mnt/nfs/cache/persistent # DEEPSQUARE_TMP or DEEPSQUARE_SHARED_TMP (cache is not cleared, this must be cleared via cron)
+chmod 777 /mnt/nfs/cache/persistent
+mkdir -p /mnt/nfs/cache/world-tmp # DEEPSQUARE_SHARED_WORLD_TMP (cache is not cleared, this must be cleared via cron)
+chmod 777 /mnt/nfs/cache/world-tmp
+
+mkdir -p /mnt/disk/persistent
+chmod 755 /mnt/disk/persistent
+
+mkdir -p /mnt/disk/persistent/per-user
+chmod 755 /mnt/disk/persistent/per-user
+rm -rf /mnt/disk/persistent/per-user/tmp
+mkdir -p -m777 /mnt/disk/persistent/per-user/tmp # DEEPSQUARE_DISK_TMP
+
+mkdir -p /mnt/disk/persistent/shared
+chmod 755 /mnt/disk/persistent/shared
+rm -rf /mnt/disk/persistent/shared/tmp
+mkdir -p -m777 /mnt/disk/persistent/shared/tmp # DEEPSQUARE_DISK_WORLD_TMP
 
 echo "APPTAINER_TMPDIR=/mnt/scratch/tmp/apptainer/" >>/etc/environment
