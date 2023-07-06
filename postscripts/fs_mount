@@ -16,9 +16,10 @@ chmod 755 /mnt/nfs
 mkdir -p -m755 /home/ldap-users
 mkdir -p -m755 /opt/cache
 mkdir -p -m755 /opt/cache/enroot
-ln -s /mnt/nfs/cache/shared /opt/cache/shared                   # STORAGE_PATH
-ln -s /mnt/nfs/cache/persistent /opt/cache/persistent           # DEEPSQUARE_TMP or DEEPSQUARE_SHARED_TMP
-ln -s /mnt/nfs/cache/world-tmp /opt/cache/world-tmp             # DEEPSQUARE_SHARED_WORLD_TMP
+ln -s /mnt/nfs/cache/shared /opt/cache/shared         # STORAGE_PATH
+ln -s /mnt/nfs/cache/persistent /opt/cache/persistent # DEEPSQUARE_TMP or DEEPSQUARE_SHARED_TMP
+ln -s /mnt/nfs/cache/world-tmp /opt/cache/world-tmp   # DEEPSQUARE_SHARED_WORLD_TMP
+mkdir -p -m755 /opt/cache/disk
 ln -s /mnt/disk/persistent/per-user/tmp /opt/cache/disk/tmp     # DEEPSQUARE_DISK_TMP
 ln -s /mnt/disk/persistent/shared/tmp /opt/cache/disk/world-tmp # DEEPSQUARE_DISK_WORLD_TMP
 ln -s /mnt/disk/persistent /mnt/persistent
