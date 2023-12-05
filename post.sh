@@ -58,10 +58,8 @@ PATH="${SCRIPTPATH}/postscripts:$PATH"
 chmod +x "${SCRIPTPATH}/postscripts/"*
 
 RUN disable-beegfs
-RUN wireguard
 RUN install-bore
 RUN symlink-ca
-RUN xorg-setup
 RUN restorecap
 RUN ldap
 RUN fs_mount
