@@ -1,0 +1,6 @@
+#!/bin/sh
+
+git clone https://passt.top/passt /tmp/passt
+cd /tmp/passt
+make -j$(nproc)
+prefix=/usr make install

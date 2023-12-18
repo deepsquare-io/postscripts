@@ -65,7 +65,8 @@ RUN ldap
 RUN fs_mount
 RUN slurm
 RUN install-logger
-RUN set-motd
 RUN cvmfs_mount
 RUN setups5cmd
 RUN nv-unlocker
+RUN install-pasta
+RUN set-motd
