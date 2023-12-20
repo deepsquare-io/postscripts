@@ -70,3 +70,6 @@ RUN setups5cmd
 RUN nv-unlocker
 RUN install-pasta
 RUN set-motd
+# For wireguard
+sysctl -w net.ipv4.ip_forward=1
+sysctl -w net.ipv6.conf.all.forwarding=1
