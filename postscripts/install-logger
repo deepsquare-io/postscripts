@@ -1,11 +1,11 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 arch="$(uname -m)"
 
 if [[ $arch == x86_64* ]]; then
-    curl -fsSL https://github.com/deepsquare-io/grid/releases/download/grid-logger%2Fv1.3.2/grid-logger-writer-linux-amd64 -o /usr/local/bin/grid-logger-writer
+  curl -fsSL https://github.com/deepsquare-io/grid/releases/download/grid-logger%2Fv1.3.4/grid-logger-writer-linux-amd64 -o /usr/local/bin/grid-logger-writer
 elif [[ $arch == arm* ]] || [[ $arch = aarch64 ]]; then
-    curl -fsSL https://github.com/deepsquare-io/grid/releases/download/grid-logger%2Fv1.3.2/grid-logger-writer-linux-arm64 -o /usr/local/bin/grid-logger-writer
+  curl -fsSL https://github.com/deepsquare-io/grid/releases/download/grid-logger%2Fv1.3.4/grid-logger-writer-linux-arm64 -o /usr/local/bin/grid-logger-writer
 fi
 
-chmod +x /usr/local/bin/grid-logger-writer
+chmod 755 /usr/local/bin/grid-logger-writer

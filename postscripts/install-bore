@@ -4,13 +4,13 @@ arch="$(uname -m)"
 
 if [[ $arch == x86_64* ]]; then
     curl -fsSL https://github.com/deepsquare-io/proxy/releases/download/v0.2.2/dpsproxy-linux-amd64 -o /usr/bin/dpsproxy
-elif  [[ $arch == arm* ]] || [[ $arch = aarch64 ]]; then
+elif [[ $arch == arm* ]] || [[ $arch = aarch64 ]]; then
     curl -fsSL https://github.com/deepsquare-io/proxy/releases/download/v0.2.2/dpsproxy-linux-arm64 -o /usr/bin/dpsproxy
 fi
 
 if [[ $arch == x86_64* ]]; then
     curl -fsSL https://github.com/deepsquare-io/bore/releases/download/v0.4.2/bore_linux_amd64 -o /usr/bin/bore
-elif  [[ $arch == arm* ]] || [[ $arch = aarch64 ]]; then
+elif [[ $arch == arm* ]] || [[ $arch = aarch64 ]]; then
     curl -fsSL https://github.com/deepsquare-io/bore/releases/download/v0.4.2/bore_linux_arm -o /usr/bin/bore
 fi
 
